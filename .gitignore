@@ -1,0 +1,8 @@
+*.o
+*.ali
+*.stderr
+*.stdout
+/obj/
+/lib/
+/alire/
+/config/

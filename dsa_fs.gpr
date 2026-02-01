@@ -1,0 +1,30 @@
+with "config/dsa_fs_config.gpr";
+project DSA_FS is
+
+   for Library_Name use "dsa_fs";
+   for Library_Version use Project'Library_Name & ".so." & Dsa_Fs_Config.Crate_Version;
+
+   for Source_Dirs use ("src/", "config/");
+   for Object_Dir use "src/";
+   for Create_Missing_Dirs use "True";
+   --  for Library_Dir use "src";
+
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("DSA_FS_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+   for Library_Kind use Library_Type;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Dsa_Fs_Config.Ada_Compiler_Switches;
+      for Switches ("s-parint.adb") use Dsa_Fs_Config.Ada_Compiler_Switches & "-gnatg";
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
+
+   package Install is
+      for Artifacts (".") use ("share");
+   end Install;
+
+end DSA_FS;
