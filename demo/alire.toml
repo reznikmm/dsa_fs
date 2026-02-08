@@ -9,7 +9,7 @@ licenses = "GPL-3.0-or-later WITH GCC-exception-3.1"
 website = ""
 tags = []
 
-project-files = ["client.gpr"]
+project-files = ["client.gpr", "server.gpr"]
 
 executables = ["client"]
 

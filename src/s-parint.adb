@@ -30,6 +30,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with System.Storage_Elements;
+
 package body System.Partition_Interface is
 
    pragma Warnings (Off); -- suppress warnings for unreferenced formals
@@ -44,6 +46,7 @@ package body System.Partition_Interface is
    type Pkg_List is access Pkg_Node;
    type Pkg_Node is record
       Name          : String_Access;
+      Receiver      : RPC_Receiver;
       Subp_Info     : System.Address;
       Subp_Info_Len : Integer;
       Next          : Pkg_List;
@@ -171,7 +174,21 @@ package body System.Partition_Interface is
    function Get_RCI_Package_Receiver
      (Name : Unit_Name) return Interfaces.Unsigned_64
    is
+      P : Pkg_List := Pkg_Head;
+      N : String   := Lower (Name);
+
    begin
+      while P /= null loop
+         if P.Name.all = N then
+            return
+              Interfaces.Unsigned_64
+                (System.Storage_Elements.To_Integer
+                   (P.Receiver.all'Address));
+         end if;
+
+         P := P.Next;
+      end loop;
+
       return 0;
    end Get_RCI_Package_Receiver;
 
@@ -247,7 +264,21 @@ package body System.Partition_Interface is
       ------------------------------
 
       function Get_RCI_Package_Receiver return Interfaces.Unsigned_64 is
+         P : Pkg_List := Pkg_Head;
+         N : String   := Lower (RCI_Name);
+
       begin
+         while P /= null loop
+            if P.Name.all = N then
+               return
+                 Interfaces.Unsigned_64
+                   (System.Storage_Elements.To_Integer
+                      (P.Receiver.all'Address));
+            end if;
+
+            P := P.Next;
+         end loop;
+
          return 0;
       end Get_RCI_Package_Receiver;
 
@@ -279,6 +310,7 @@ package body System.Partition_Interface is
    is
       N : constant Pkg_List :=
             new Pkg_Node'(new String'(Lower (Name)),
+                          Receiver,
                           Subp_Info, Subp_Info_Len,
                           Next => null);
    begin

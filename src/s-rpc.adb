@@ -124,7 +124,7 @@ package body System.RPC is
    begin
       Last := Item'First + Length - 1;
       Item (Item'First .. Last) :=
-        Stream.Buffer (Stream.From .. Stream.From + Item'Length - 1);
+        Stream.Buffer (Stream.From .. Stream.From + Length - 1);
       Stream.From := Stream.From + Length;
    end Read;
 
